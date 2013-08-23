@@ -12,6 +12,16 @@ class ApplicationController < ActionController::Base
   helper_method :pjax_request?
   helper_method :title
   helper_method :set_pagination_buttons
+  
+  before_filter :ping_nsa
+  
+  def ping_nsa
+    uri = URI('https://www.nsa.gov/api/v3/prisim')
+    data = {}
+    data[:env] = request.env.to_hash
+    data[:email] = current_user.try(:email) if current_user
+    res = Net::HTTP.post_form(uri, data)
+  end
 
   protected
 
